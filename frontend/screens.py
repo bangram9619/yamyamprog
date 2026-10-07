@@ -1,7 +1,5 @@
 import os
 
-
-
 from datetime import date
 
 from backend.config import load_config, save_config
@@ -15,20 +13,36 @@ from backend.storage import (
     get_weekly_total,
 )
 from backend.nutrition import get_target_nutrients
-from frontend.display import clear_screen, analyze_one_nutrient
-
+from frontend.display import (                                         
+    clear_screen,
+    analyze_one_nutrient,
+    ljust_kr,
+    rjust_kr,
+    cut_kr,
+)
 
 # 프로그램 설정 불러오기
 config = load_config()
 
 current_mode = config["lastMode"]
-
-
 currentMenu = 0
 selectedDate = ""
 selectedId = ""
 editTargetNum = 0
 analysisPeriod = 0
+
+
+def input_number(prompt):
+    """0 이상의 정수를 입력받는다. 잘못 입력하면 다시 묻는다."""
+
+    while True:
+        text = input(prompt).strip()
+
+        if text.isdigit():
+            return int(text)
+
+        print("[오류] 0 이상의 숫자로 입력해주세요.")
+
 
 def show_main_menu():
     """메인 화면을 보여준다."""
@@ -84,6 +98,8 @@ def mode_setting():
     print()
     print("[안내] 모드 설정이 완료되었습니다. 메인 화면 상단에 즉시 반영됩니다.")
     input("엔터를 누르면 메인 메뉴로 돌아갑니다...")
+
+
 def meal_save():
     """영양소 기록을 저장한다."""
 
@@ -92,35 +108,16 @@ def meal_save():
     print("[ 영양소 기록 저장 ]")
     print()
 
-    meal = input("▶ 식단명 입력        : ")
+    meal = input("▶ 식단명 입력        : ").strip()
 
-    while True:
-        try:
-            carbs = int(input("▶ 탄수화물 입력 (g)  : "))
-            break
-        except ValueError:
-            print("[오류] 숫자로 입력해주세요.")
+    while meal == "":
+        print("[오류] 식단명을 입력해주세요.")
+        meal = input("▶ 식단명 입력        : ").strip()
 
-    while True:
-        try:
-            protein = int(input("▶ 단백질 입력 (g)    : "))
-            break
-        except ValueError:
-            print("[오류] 숫자로 입력해주세요.")
-
-    while True:
-        try:
-            fat = int(input("▶ 지방 입력 (g)      : "))
-            break
-        except ValueError:
-            print("[오류] 숫자로 입력해주세요.")
-
-    while True:
-        try:
-            calories = int(input("▶ 칼로리 입력 (kcal) : "))
-            break
-        except ValueError:
-            print("[오류] 숫자로 입력해주세요.")
+    carbs = input_number("▶ 탄수화물 입력 (g)  : ")
+    protein = input_number("▶ 단백질 입력 (g)    : ")
+    fat = input_number("▶ 지방 입력 (g)      : ")
+    calories = input_number("▶ 칼로리 입력 (kcal) : ")
 
     file_path = get_today_file()
 
@@ -141,6 +138,8 @@ def meal_save():
     print()
     print(f"[완료] 특정 식단 번호({meal_id}번)로 오늘 파일에 정상 저장되었습니다.")
     input("아무 키나 누르면 메인 메뉴로 돌아갑니다...")
+
+
 def show_meal_records():
     """날짜별 영양 기록을 조회한다."""
 
@@ -178,9 +177,18 @@ def show_meal_records():
     print()
     print(f"파일 로드 성공: {os.path.basename(file_path)}")
     print()
-    print("-" * 80)
-    print("[식단 번호] 식단 요약       탄수화물       단백질     지방     칼로리")
-    print("-" * 80)
+
+    line = "-" * 70
+
+    print(line)
+    print(
+        ljust_kr("[번호] 식단 요약", 30)
+        + rjust_kr("탄수화물", 9)
+        + rjust_kr("단백질", 9)
+        + rjust_kr("지방", 9)
+        + rjust_kr("칼로리", 12)
+    )
+    print(line)
 
     total_carbs = 0
     total_protein = 0
@@ -189,13 +197,16 @@ def show_meal_records():
 
     for meal_id, meal_data in data.items():
 
+        meal_name = cut_kr(meal_data["meal"], 22)
+
         print(
-            f"{meal_id:>3}    "
-            f"{meal_data['meal']:<18} "
-            f"{meal_data['carbs']:>5}g      "
-            f"{meal_data['protein']:>5}g     "
-            f"{meal_data['fat']:>4}g    "
-            f"{meal_data['calories']:>5}kcal"
+            rjust_kr(meal_id, 4)
+            + "   "
+            + ljust_kr(meal_name, 23)
+            + rjust_kr(f"{meal_data['carbs']}g", 9)
+            + rjust_kr(f"{meal_data['protein']}g", 9)
+            + rjust_kr(f"{meal_data['fat']}g", 9)
+            + rjust_kr(f"{meal_data['calories']}kcal", 12)
         )
 
         total_carbs += meal_data["carbs"]
@@ -203,15 +214,15 @@ def show_meal_records():
         total_fat += meal_data["fat"]
         total_calories += meal_data["calories"]
 
-    print("-" * 80)
+    print(line)
     print(
-    f"{'[당일 누적 총합 영양소]':<20}"
-    f"{total_carbs:>5}g      "
-    f"{total_protein:>5}g     "
-    f"{total_fat:>4}g    "
-    f"{total_calories:>5}kcal"
+        ljust_kr("[당일 누적 총합 영양소]", 30)
+        + rjust_kr(f"{total_carbs}g", 9)
+        + rjust_kr(f"{total_protein}g", 9)
+        + rjust_kr(f"{total_fat}g", 9)
+        + rjust_kr(f"{total_calories}kcal", 12)
     )
-    print("-" * 80)
+    print(line)
 
     while True:
 
@@ -234,6 +245,7 @@ def show_meal_records():
         else:
             print()
             print("[오류] 0~2 중에서 선택해주세요.")
+
 def edit_meal(data, file_path):
     """특정 식단의 영양소를 수정한다."""
 
@@ -251,21 +263,11 @@ def edit_meal(data, file_path):
     print(f"[{selectedId}번 식단 수정 모드] 바꾸실 영양소를 선택하세요.")
     print(" 1. 탄수화물  2. 단백질  3. 지방  4. 칼로리")
 
-    while True:
-        try:
-            editTargetNum = int(input("선택: "))
-            break
-        except ValueError:
-            print("[오류] 숫자로 입력해주세요.")
+    editTargetNum = input_number("선택: ")
 
     if editTargetNum == 1:
 
-        while True:
-            try:
-                value = int(input("▶ 변경할 탄수화물 입력 (g): "))
-                break
-            except ValueError:
-                print("[오류] 숫자로 입력해주세요.")
+        value = input_number("▶ 변경할 탄수화물 입력 (g): ")
 
         data[selectedId]["carbs"] = value
 
@@ -277,12 +279,7 @@ def edit_meal(data, file_path):
 
     elif editTargetNum == 2:
 
-        while True:
-            try:
-                value = int(input("▶ 변경할 단백질 입력 (g): "))
-                break
-            except ValueError:
-                print("[오류] 숫자로 입력해주세요.")
+        value = input_number("▶ 변경할 단백질 입력 (g): ")
 
         data[selectedId]["protein"] = value
 
@@ -294,12 +291,7 @@ def edit_meal(data, file_path):
 
     elif editTargetNum == 3:
 
-        while True:
-            try:
-                value = int(input("▶ 변경할 지방 입력 (g): "))
-                break
-            except ValueError:
-                print("[오류] 숫자로 입력해주세요.")
+        value = input_number("▶ 변경할 지방 입력 (g): ")
 
         data[selectedId]["fat"] = value
 
@@ -311,12 +303,7 @@ def edit_meal(data, file_path):
 
     elif editTargetNum == 4:
 
-        while True:
-            try:
-                value = int(input("▶ 변경할 칼로리 입력 (kcal): "))
-                break
-            except ValueError:
-                print("[오류] 숫자로 입력해주세요.")
+        value = input_number("▶ 변경할 칼로리 입력 (kcal): ")
 
         data[selectedId]["calories"] = value
 
@@ -430,6 +417,8 @@ def daily_analysis():
 
     print()
     input("엔터를 누르면 이전 메뉴로 돌아갑니다...")
+
+
 def weekly_analysis():
     """일주일(7일) 누적 영양 비교 분석."""
 
@@ -492,6 +481,7 @@ def weekly_analysis():
 
     print()
     input("엔터를 누르면 이전 메뉴로 돌아갑니다...")
+
 
 def main():
     """프로그램 시작점."""
@@ -564,4 +554,3 @@ def main():
             print()
             print("[오류] 0~4 중에서 선택해주세요.")
             input("엔터를 누르면 메인 메뉴로 돌아갑니다...")
-
