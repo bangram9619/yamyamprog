@@ -1,0 +1,30 @@
+{
+    "1": {
+        "meal": "닭찌찌",
+        "carbs": 500,
+        "protein": 500,
+        "fat": 500,
+        "calories": 1500
+    },
+    "2": {
+        "meal": "짱큰닭",
+        "carbs": 100,
+        "protein": 100,
+        "fat": 100,
+        "calories": 100
+    },
+    "3": {
+        "meal": "쿠키런키",
+        "carbs": 123,
+        "protein": 321,
+        "fat": 213,
+        "calories": 312
+    },
+    "4": {
+        "meal": "312",
+        "carbs": 12312,
+        "protein": 123,
+        "fat": 12,
+        "calories": 3
+    }
+}
