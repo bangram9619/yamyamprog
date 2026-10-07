@@ -375,9 +375,14 @@ def daily_analysis():
 
     if total is None:
         print()
-        print("[안내] 기록된 식단이 없습니다. 새로 등록해 주세요.")
-        input("엔터를 누르면 이전 메뉴로 돌아갑니다...")
-        return
+        print("[안내] 기록된 식단이 없어 섭취량을 0으로 계산합니다.")
+
+        total = {
+            "carbs": 0,
+            "protein": 0,
+            "fat": 0,
+            "calories": 0
+        }
 
     print()
     print("[ 모드별 기준 vs 사용자 섭취 영양 비교 분석 (하루 기준) ]")
