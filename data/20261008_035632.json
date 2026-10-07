@@ -1,0 +1,44 @@
+{
+    "1": {
+        "meal": "먼작귀",
+        "carbs": 1000,
+        "protein": 1000,
+        "fat": 1000,
+        "calories": 2000
+    },
+    "2": {
+        "meal": "바밤바",
+        "carbs": 1,
+        "protein": 1,
+        "fat": 1,
+        "calories": 3
+    },
+    "3": {
+        "meal": "치이카와",
+        "carbs": 5,
+        "protein": 5,
+        "fat": 5,
+        "calories": 50
+    },
+    "7": {
+        "meal": "샘송폰",
+        "carbs": 123,
+        "protein": 5,
+        "fat": 1,
+        "calories": 5
+    },
+    "8": {
+        "meal": "렌고쿠",
+        "carbs": 1,
+        "protein": 100,
+        "fat": 1,
+        "calories": 100
+    },
+    "9": {
+        "meal": "무잔",
+        "carbs": 111,
+        "protein": 100,
+        "fat": 5,
+        "calories": 100
+    }
+}

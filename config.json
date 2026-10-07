@@ -1,5 +1,22 @@
 {
-    "lastMode": "운동",
+    "lastMode": "다이어트",
     "weight": 75,
-    "dataDir": "./data"
+    "dataDir": "./data",
+    "kcalPerGram": {
+        "carbs": 4,
+        "protein": 4,
+        "fat": 9
+    },
+    "modes": {
+        "운동": {
+            "carbs": 5,
+            "protein": 1.6,
+            "fat": 0.9
+        },
+        "다이어트": {
+            "carbs": 3,
+            "protein": 1.8,
+            "fat": 0.7
+        }
+    }
 }
